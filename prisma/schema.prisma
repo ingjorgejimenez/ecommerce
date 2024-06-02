@@ -10,7 +10,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://postgres:123456@localhost:5432/ecommerce-shop"
+  url      = env("DATABASE_URL")
 }
 
 enum Size {
