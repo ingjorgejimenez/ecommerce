@@ -1,15 +1,11 @@
-import { QuantitySelector, Title } from '@/components'
+import { Title } from '@/components'
 import Link from 'next/link'
-import { initialData } from '../../../seed/seed'
-import Image from 'next/image'
-import { redirect } from 'next/navigation'
-
-const productsInCart = [initialData.products[0], initialData.products[1]]
+import { ProductsInCart } from './ui/ProductsInCart'
 
 export default function CartPage() {
-  if (!productsInCart?.length) {
-    redirect('/empty')
-  }
+  // if (!productsInCart?.length) {
+  //   redirect('/empty')
+  // }
   return (
     <div className='flex justify-center items-center'>
       <div className='flex flex-col w-[1000px]'>
@@ -23,31 +19,7 @@ export default function CartPage() {
             </Link>
 
             {/* items */}
-            {productsInCart.map(product => (
-              <div key={product.slug} className='flex'>
-                <Link href={`/product/${product.slug}`}>
-                  <Image
-                    src={`/products/${product.images[0]}`}
-                    width={100}
-                    height={100}
-                    style={{
-                      width: '100px',
-                      height: '100px',
-                    }}
-                    alt={product.title}
-                    className='rounded mr-5'
-                  />
-                </Link>
-                <div className='flex flex-col'>
-                  <Link href={`/product/${product.slug}`}>
-                    <span className='text-xl'>{product.title}</span>
-                  </Link>
-                  <span className='text-xl'>${product.price}</span>
-                  <QuantitySelector quantity={3} />
-                  <button className='underline mt-3'>Remover</button>
-                </div>
-              </div>
-            ))}
+            <ProductsInCart />
           </div>
           {/* checkout - Resumen de orden */}
           <div className='bg-white rounded-xl shadow-xl p-7'>

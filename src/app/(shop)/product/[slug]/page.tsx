@@ -1,22 +1,49 @@
+export const revalidate = 60 // 60seconds
+
 import {
   ProductMobileSlideshow,
   ProductSlideshow,
-  QuantitySelector,
-  SizeSelector,
+  StockLabel,
   Title,
 } from '@/components'
 import { titleFont } from '@/config/fonts'
 import { initialData } from '@/seed/seed'
 import { notFound } from 'next/navigation'
+import { getProductBySlug } from '@/actions'
+import { Metadata, ResolvingMetadata } from 'next'
+import { AddToCart } from './ui/AddToCart'
 
 interface PropsPage {
   params: {
     slug: string
   }
 }
-export default function ProductPage({ params }: Readonly<PropsPage>) {
+
+export async function generateMetadata(
+  { params }: PropsPage,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
+  // read route params
+  const slug = params.slug
+
+  // fetch data
+  const product = await getProductBySlug(slug)
+
+  return {
+    title: product?.title ?? '',
+    description: product?.description ?? '',
+    openGraph: {
+      title: product?.title ?? '',
+      description: product?.description ?? '',
+      images: [`/product/${product?.images[1]}`],
+    },
+  }
+}
+
+export default async function ProductPage({ params }: Readonly<PropsPage>) {
   const { slug } = params
-  const product = initialData.products.find(p => p.slug === slug)
+  const product = await getProductBySlug(slug)
+  // const product = initialData.products.find(p => p.slug === slug)
 
   if (!product) {
     notFound()
@@ -57,17 +84,10 @@ export default function ProductPage({ params }: Readonly<PropsPage>) {
           >
             {product.title}
           </h1>
+          <StockLabel stock={product.inStock} slug={product.slug} />
           <p className='mb-5 text-lg'>${product.price}</p>
 
-          {/* Selector de tallas */}
-          <SizeSelector selectedSize={'XS'} availableSizes={product.sizes} />
-
-          {/* Selector de Cantidad */}
-          <QuantitySelector quantity={2} />
-
-          {/* Button */}
-          <button className='my-5 btn-primary'>Agregar al carrito</button>
-
+          <AddToCart product={product} />
           {/* Descripción */}
           <h3 className='text-sm font-bold'>Descripción</h3>
           <p className='font-light'>{product.description}</p>
