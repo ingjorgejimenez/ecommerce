@@ -1,25 +1,37 @@
-
 import prisma from '../lib/prisma'
 
-
-import { initialData } from "./seed";
-
+import { initialData } from './seed'
+import { countries } from './seed-countries'
 
 async function main() {
   // 1. Borrar registros previos
 
   // await Promise.all([
 
-  await prisma.product.deleteMany(),
-    await prisma.productImage.deleteMany(),
+  await prisma.userAddress.deleteMany()
+  await prisma.user.deleteMany()
+  await prisma.country.deleteMany()
+  await prisma.productImage.deleteMany(),
+    await prisma.product.deleteMany(),
     await prisma.category.deleteMany()
 
   // ])
 
-  const { categories, products } = initialData
+  const { categories, products, users } = initialData
+
+  // User Created
+
+  await prisma.user.createMany({
+    data: users,
+  })
+
+  // Country Created
+
+  await prisma.country.createMany({
+    data: countries,
+  })
 
   // 2. Crear categorías
-
 
   const CapitalizeFirstLetter = (str: string) => {
     return str.at(0)?.toLocaleUpperCase() + str.slice(1)
@@ -32,9 +44,8 @@ async function main() {
     return [...acc, { name: CapitalizeFirstLetter(name) }]
   }, [] as { name: string }[])
 
-
   await prisma.category.createMany({
-    data: categoriesData
+    data: categoriesData,
   })
 
   const categoriesDB = await prisma.category.findMany()
@@ -42,7 +53,7 @@ async function main() {
   const categoriesMap = categoriesDB.reduce((acc, category) => {
     return {
       ...acc,
-      [category.name.toLowerCase()]: category.id
+      [category.name.toLowerCase()]: category.id,
     }
   }, {} as Record<string, string>)
 
@@ -59,7 +70,6 @@ async function main() {
   //   }]
   // }, [])
 
-
   // const productMap = products.map((product) => {
   //   const categoryId = categoriesMap[product.type.toLowerCase()]
   //   const { images, type, ...rest } = product
@@ -69,21 +79,22 @@ async function main() {
   //   }
   // })
 
-  products.forEach(async (product) => {
+  products.forEach(async product => {
     const categoryId = categoriesMap[product.type.toLowerCase()]
     const { images, type, ...rest } = product
-    const productDB = await prisma.product.create({ data: { ...rest, categoryId } })
-    const imagesData = images.map((url) => ({ url, productId: productDB.id }))
+    const productDB = await prisma.product.create({
+      data: { ...rest, categoryId },
+    })
+    const imagesData = images.map(url => ({ url, productId: productDB.id }))
     await prisma.productImage.createMany({ data: imagesData })
   })
 
   // const productDb = await prisma.product.createMany({ data: productMap })
 
-
   console.log('Seed Ejecutado correctamente')
 }
 
-(() => {
+;(() => {
   if (process.env.NODE_ENV === 'production') return
-  main();
+  main()
 })()

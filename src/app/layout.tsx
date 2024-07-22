@@ -2,6 +2,9 @@ import type { Metadata } from 'next'
 import { inter } from '@/config/fonts'
 
 import './globals.css'
+import { auth } from '@/auth/auth.config'
+import { redirect } from 'next/navigation'
+import { Provider } from '@/components'
 
 export const metadata: Metadata = {
   title: {
@@ -11,15 +14,16 @@ export const metadata: Metadata = {
   description: 'Una tienda virtual de productos',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-
   return (
     <html lang='en'>
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <Provider>{children}</Provider>
+      </body>
     </html>
   )
 }

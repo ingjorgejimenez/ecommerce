@@ -1,7 +1,15 @@
-export default function Admin() {
+interface PropsPage {
+  params: {
+    gender: string
+  }
+  searchParams: {
+    page?: string
+  }
+}
+export default function NamePage({ params, searchParams }: PropsPage) {
   return (
     <div>
-      <h1>Category Page</h1>
+      <h1>Hello Page</h1>
     </div>
   )
 }

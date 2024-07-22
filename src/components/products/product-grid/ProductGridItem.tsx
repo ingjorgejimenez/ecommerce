@@ -12,7 +12,6 @@ interface Props {
 
 export const ProductGridItem = ({ product }: Props) => {
   const [displayImage, setDisplayImage] = useState(product.images[0])
-
   return (
     <div className='rounded-md overflow-hidden fade-in'>
       <Link href={`/product/${product.slug}`}>
@@ -26,7 +25,6 @@ export const ProductGridItem = ({ product }: Props) => {
           onMouseLeave={() => setDisplayImage(product.images[0])}
         />
       </Link>
-
       <div className='p-4 flex flex-col'>
         <Link className='hover:text-blue-600' href={`/product/${product.slug}`}>
           {product.title}

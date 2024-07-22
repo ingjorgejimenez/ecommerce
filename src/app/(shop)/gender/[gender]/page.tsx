@@ -34,9 +34,6 @@ export default async function CategoryPage({
     kid: 'para niños',
     unisex: 'para todos',
   }
-  // if (id != 'kid' || id != 'women' || id != 'men') {
-  //   notFound()
-  // }
 
   return (
     <div>

@@ -1,18 +1,17 @@
 'use server'
-import prisma from "@/lib/prisma"
-import { sleep } from "@/utils"
-
+import prisma from '@/lib/prisma'
+import { sleep } from '@/utils'
 
 export const getStockBySlug = async (slug: string) => {
   try {
-    await sleep(2) //esperar 2 segundos
+    // await sleep(2) //esperar 2 segundos
     const stock = await prisma.product.findFirst({
       select: {
-        inStock: true
+        inStock: true,
       },
       where: {
-        slug
-      }
+        slug,
+      },
     })
     return stock?.inStock ?? 0
   } catch (error) {

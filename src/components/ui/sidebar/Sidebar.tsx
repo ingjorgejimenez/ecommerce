@@ -1,8 +1,12 @@
 'use client'
 
+import { logout } from '@/actions'
 import { useUIStore } from '@/store'
 import clsx from 'clsx'
+import { signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
+import { redirect, useRouter } from 'next/navigation'
+
 import {
   IoCloseOutline,
   IoLogInOutline,
@@ -16,18 +20,29 @@ import {
 
 export const Sidebar = () => {
   const { closeSideMenu, isSideMenuOpen } = useUIStore()
+  const router = useRouter()
+
+  // Session hook not provider with server actions
+
+  // const { status, user } = useGetSession()
+  // console.log(user)
+
+  // session hook with provider
+
+  const { data: session } = useSession()
+
   return (
     <div>
       {/* Background */}
 
       {isSideMenuOpen && (
-        <div className='fixed top-0 left-0 w-screen h-screen z-10 bg-black opacity-30' />
+        <div className='fixed top-0 left-0 z-10 w-screen h-screen bg-black opacity-30' />
       )}
 
       {/* Blur */}
 
       {isSideMenuOpen && (
-        <div className='fade-in fixed top-0 left-0 w-screen h-screen z-10 backdrop-filter backdrop-blur-sm' />
+        <div className='fixed top-0 left-0 z-10 w-screen h-screen fade-in backdrop-filter backdrop-blur-sm' />
       )}
 
       {/* Sidemenu */}
@@ -42,7 +57,7 @@ export const Sidebar = () => {
       >
         <IoCloseOutline
           size={50}
-          className='absolute top-5 right-5 cursor-pointer'
+          className='absolute cursor-pointer top-5 right-5'
           onClick={closeSideMenu}
         />
 
@@ -52,67 +67,79 @@ export const Sidebar = () => {
           <input
             type='text'
             placeholder='Buscar'
-            className='w-full bg-gray-50 rounded pl-10 py-1 pr-10 border-b-2 text-xl border-gray-200 focus:outline-none focus:border-blue-500'
+            className='w-full py-1 pl-10 pr-10 text-xl border-b-2 border-gray-200 rounded bg-gray-50 focus:outline-none focus:border-blue-500'
           />
         </div>
 
         <Link
-          href='/'
-          className='flex items-center mt-10 p-2 hover:bg-gray-100 rounded transition-all'
+          href='/profile'
+          onClick={closeSideMenu}
+          className='flex items-center p-2 mt-10 transition-all rounded hover:bg-gray-100'
         >
           <IoPersonOutline size={30} />
           <span className='ml-3 text-xl'>Perfil</span>
         </Link>
         <Link
           href='/'
-          className='flex items-center mt-10 p-2 hover:bg-gray-100 rounded transition-all'
+          className='flex items-center p-2 mt-10 transition-all rounded hover:bg-gray-100'
         >
           <IoTicketOutline size={30} />
           <span className='ml-3 text-xl'>Ordenes</span>
         </Link>
-
-        <Link
-          href='/'
-          className='flex items-center mt-10 p-2 hover:bg-gray-100 rounded transition-all'
-        >
-          <IoLogInOutline size={30} />
-          <span className='ml-3 text-xl'>Ingresar</span>
-        </Link>
-
-        <Link
-          href='/'
-          className='flex items-center mt-10 p-2 hover:bg-gray-100 rounded transition-all'
-        >
-          <IoLogOutOutline size={30} />
-          <span className='ml-3 text-xl'>Salir</span>
-        </Link>
+        {!session?.user && (
+          <Link
+            href='/auth/login'
+            className='flex items-center p-2 mt-10 transition-all rounded hover:bg-gray-100'
+          >
+            <IoLogInOutline size={30} />
+            <span className='ml-3 text-xl'>Ingresar</span>
+          </Link>
+        )}
+        {!!session?.user && (
+          <button
+            className='flex items-center w-full p-2 mt-10 transition-all rounded hover:bg-gray-100'
+            onClick={() => {
+              // router.refresh()
+              logout()
+              closeSideMenu()
+              window.location.replace('/')
+            }}
+          >
+            <IoLogOutOutline size={30} />
+            <span className='ml-3 text-xl'>Salir</span>
+          </button>
+        )}
 
         {/* Line Separator */}
 
-        <div className='w-full h-px bg-gray-200 my-10' />
-        <Link
-          href='/'
-          className='flex items-center mt-10 p-2 hover:bg-gray-100 rounded transition-all'
-        >
-          <IoShirtOutline size={30} />
-          <span className='ml-3 text-xl'>Productos</span>
-        </Link>
+        <div className='w-full h-px my-10 bg-gray-200' />
+        {session?.user.role === 'admin' && (
+          <>
+            <Link
+              href='/'
+              className='flex items-center p-2 mt-10 transition-all rounded hover:bg-gray-100'
+            >
+              <IoShirtOutline size={30} />
+              <span className='ml-3 text-xl'>Productos</span>
+            </Link>
 
-        <Link
-          href='/'
-          className='flex items-center mt-10 p-2 hover:bg-gray-100 rounded transition-all'
-        >
-          <IoTicketOutline size={30} />
-          <span className='ml-3 text-xl'>Ordenes</span>
-        </Link>
+            <Link
+              href='/'
+              className='flex items-center p-2 mt-10 transition-all rounded hover:bg-gray-100'
+            >
+              <IoTicketOutline size={30} />
+              <span className='ml-3 text-xl'>Ordenes</span>
+            </Link>
 
-        <Link
-          href='/'
-          className='flex items-center mt-10 p-2 hover:bg-gray-100 rounded transition-all'
-        >
-          <IoPeopleOutline size={30} />
-          <span className='ml-3 text-xl'>Usuarios</span>
-        </Link>
+            <Link
+              href='/'
+              className='flex items-center p-2 mt-10 transition-all rounded hover:bg-gray-100'
+            >
+              <IoPeopleOutline size={30} />
+              <span className='ml-3 text-xl'>User</span>
+            </Link>
+          </>
+        )}
       </nav>
     </div>
   )

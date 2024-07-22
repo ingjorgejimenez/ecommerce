@@ -44,7 +44,6 @@ export default async function ProductPage({ params }: Readonly<PropsPage>) {
   const { slug } = params
   const product = await getProductBySlug(slug)
   // const product = initialData.products.find(p => p.slug === slug)
-
   if (!product) {
     notFound()
   }

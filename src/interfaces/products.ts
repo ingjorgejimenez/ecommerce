@@ -21,6 +21,14 @@ export interface ICartProduct {
   size: Size
   image: string
 }
+export interface IUser {
+  id: string
+  name: string
+  email: string
+  emailVerified: Date | null
+  role: 'admin' | 'user'
+  image?: string | null
+}
 
 export type Category = 'men' | 'women' | 'kid' | 'unisex'
 export type Size = 'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL' | 'XXXL'
